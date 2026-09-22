@@ -13,9 +13,41 @@ type DashboardState = "loading" | "ready" | "error";
 
 const statusOrder: Record<HealthStatus, number> = {
   CRITICAL: 0,
+  HIGH: 0,
   WARNING: 1,
   HEALTHY: 2,
 };
+
+const pipelineStages = [
+  {
+    label: "Restaurant Events",
+    value: "restaurant_events_v2",
+    detailLabel: "Source",
+    detail: "Datagen",
+    description: "Contains restaurant preparation and order activity.",
+  },
+  {
+    label: "Stream Processing",
+    value: "Flink SQL",
+    detailLabel: "Calculates",
+    detail: "prep_ratio, rescue_score, health_status",
+    description: "Processes restaurant events in real time to identify operational stress.",
+  },
+  {
+    label: "Rescue Alerts",
+    value: "restaurant_rescue_alerts",
+    detailLabel: "Contains",
+    detail: "Restaurants requiring operational attention",
+    description: "The output topic consumed by the Order Rescue application.",
+  },
+  {
+    label: "Application",
+    value: "Order Rescue",
+    detailLabel: "Runtime",
+    detail: "Next.js application running on Vercel",
+    description: "Presents the latest restaurant rescue signals for operations teams.",
+  },
+] as const;
 
 function formatUpdatedAt(updatedAt: Date | null): string {
   if (!updatedAt) {
@@ -33,7 +65,9 @@ function formatUpdatedAt(updatedAt: Date | null): string {
 }
 
 function StatusBadge({ status }: { status: HealthStatus }) {
-  return <span className={`status-badge status-${status.toLowerCase()}`}>{status}</span>;
+  const statusClass = status === "HIGH" ? "critical" : status.toLowerCase();
+
+  return <span className={`status-badge status-${statusClass}`}>{status}</span>;
 }
 
 function Score({ score }: { score: number }) {
@@ -67,6 +101,7 @@ export default function Home() {
   const [dashboardState, setDashboardState] = useState<DashboardState>("loading");
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
+  const [selectedPipelineStage, setSelectedPipelineStage] = useState(0);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -120,13 +155,16 @@ export default function Home() {
   const selectedAlert = alerts.find(
     ({ restaurant_id }) => restaurant_id === selectedRestaurantId,
   );
-  const statusCounts = alerts.reduce<Record<HealthStatus, number>>(
-    (counts, { health_status }) => ({
-      ...counts,
-      [health_status]: counts[health_status] + 1,
-    }),
+  const statusCounts = alerts.reduce(
+    (counts, { health_status }) => {
+      if (health_status === "CRITICAL" || health_status === "WARNING" || health_status === "HEALTHY") {
+        counts[health_status] += 1;
+      }
+      return counts;
+    },
     { CRITICAL: 0, WARNING: 0, HEALTHY: 0 },
   );
+  const activePipelineStage = pipelineStages[selectedPipelineStage];
 
   return (
     <main className="dashboard-shell">
@@ -259,6 +297,56 @@ export default function Home() {
             </div>
           </section>
         ) : null}
+
+        <section className="pipeline-panel" aria-labelledby="pipeline-title">
+          <div className="pipeline-heading">
+            <div>
+              <p className="eyebrow">Data flow</p>
+              <h2 id="pipeline-title">Streaming Pipeline</h2>
+              <p>Real-time restaurant events processed by Confluent Cloud</p>
+            </div>
+            <div className="confluent-mark" aria-label="Confluent Cloud technologies">
+              <strong>Confluent Cloud</strong>
+              <span>Kafka <b aria-hidden="true">/</b> Flink <b aria-hidden="true">/</b> Schema Registry</span>
+            </div>
+          </div>
+
+          <div className="pipeline-flow" aria-label="Restaurant event streaming data flow">
+            {pipelineStages.map((stage, index) => (
+              <div className="pipeline-step" key={stage.label}>
+                <button
+                  aria-pressed={selectedPipelineStage === index}
+                  className={`pipeline-stage${selectedPipelineStage === index ? " pipeline-stage-active" : ""}`}
+                  onClick={() => setSelectedPipelineStage(index)}
+                  type="button"
+                >
+                  <span>{stage.label}</span>
+                  <strong>{stage.value}</strong>
+                </button>
+                {index < pipelineStages.length - 1 ? <span className="pipeline-connector" aria-hidden="true" /> : null}
+              </div>
+            ))}
+          </div>
+
+          <div className="pipeline-detail" aria-live="polite">
+            <div>
+              <p>{activePipelineStage.label}</p>
+              <strong>{activePipelineStage.value}</strong>
+            </div>
+            <dl>
+              <div><dt>{activePipelineStage.detailLabel}</dt><dd>{activePipelineStage.detail}</dd></div>
+              <div><dt>How it works</dt><dd>{activePipelineStage.description}</dd></div>
+            </dl>
+          </div>
+          <p className="pipeline-explanation">
+            Restaurant status events are processed in real time by Flink to identify operational stress and generate rescue alerts.
+          </p>
+        </section>
+
+        <footer className="product-footer">
+          <span>Powered by</span>
+          Confluent Cloud <b aria-hidden="true">/</b> Kafka <b aria-hidden="true">/</b> Flink <b aria-hidden="true">/</b> Schema Registry <b aria-hidden="true">/</b> Next.js <b aria-hidden="true">/</b> Vercel
+        </footer>
       </section>
       <span className="sr-only">Current client time {now}</span>
     </main>

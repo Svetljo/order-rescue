@@ -40,10 +40,13 @@ function isKafkaRecord(value: unknown): value is KafkaRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isHealthStatus(
-  value: unknown,
-): value is RestaurantRescueAlert["health_status"] {
-  return value === "CRITICAL" || value === "WARNING" || value === "HEALTHY";
+function isHealthStatus(value: unknown): value is RestaurantRescueAlert["health_status"] {
+  return (
+    value === "CRITICAL" ||
+    value === "HIGH" ||
+    value === "WARNING" ||
+    value === "HEALTHY"
+  );
 }
 
 function isNumber(value: unknown): value is number {

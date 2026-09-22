@@ -1,4 +1,4 @@
-export type HealthStatus = "CRITICAL" | "WARNING" | "HEALTHY";
+export type HealthStatus = "CRITICAL" | "HIGH" | "WARNING" | "HEALTHY";
 
 export type RestaurantRescueAlert = {
   restaurant_id: string;
