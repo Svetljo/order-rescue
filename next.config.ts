@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     "/api/kafka-test": [
       "./node_modules/@confluentinc/kafka-javascript/build/Release/confluent-kafka-javascript.node",
     ],
+    "/api/alerts": [
+      "./node_modules/@confluentinc/kafka-javascript/build/Release/confluent-kafka-javascript.node",
+    ],
   },
 };
 
