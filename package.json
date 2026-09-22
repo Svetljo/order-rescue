@@ -2,13 +2,21 @@
   "name": "order-rescue",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "allowScripts": {
+    "@confluentinc/kafka-javascript@1.10.1": true
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npm rebuild @confluentinc/kafka-javascript"
   },
   "dependencies": {
+    "@confluentinc/kafka-javascript": "^1.10.1",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8"

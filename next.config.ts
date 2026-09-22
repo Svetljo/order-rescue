@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ["@confluentinc/kafka-javascript"],
+  outputFileTracingIncludes: {
+    "/api/kafka-test": [
+      "./node_modules/@confluentinc/kafka-javascript/build/Release/confluent-kafka-javascript.node",
+    ],
+  },
 };
 
 export default nextConfig;
