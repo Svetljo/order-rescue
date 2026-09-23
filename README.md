@@ -2,6 +2,9 @@
 
 A real-time restaurant operations monitoring application powered by Confluent Cloud, Kafka, and Flink SQL.
 
+
+<img width="3024" height="2688" alt="order-rescue-zeta vercel app_" src="https://github.com/user-attachments/assets/df23728b-c061-491d-87d1-41fa2c9ac8d9" />
+
 ## The Problem
 
 A customer places an order.
