@@ -4,18 +4,32 @@ A real-time restaurant operations monitoring application powered by Confluent Cl
 
 ## The Problem
 
-Restaurant operations teams need to react quickly when a restaurant starts falling behind.
+A customer places an order.
 
-A restaurant may have:
+At first, everything looks fine:
 
-- Preparation times significantly above its normal baseline
-- A growing number of active orders
-- Couriers waiting for orders
-- Increasing operational pressure
+- restaurant accepts the order
+- food preparation starts
+- courier is assigned
+- courier approaches the restaurant
+- pickup happens
+- delivery begins
 
-These signals are useful individually, but the operational problem is identifying when they combine into a situation that requires attention.
+But then the situation can change.
 
-Traditional reporting or periodic polling can detect problems only after the relevant events have already accumulated. What is needed is a continuously processed stream of restaurant events that can turn raw operational signals into actionable alerts.
+The restaurant starts falling behind. The courier is waiting. The customer's estimated delivery time deteriorates. The longer the delay continues, the greater the risk that the customer experience will be negatively affected.
+
+For example:
+
+> **Restaurant is 12 minutes behind → courier is waiting → delivery ETA deteriorates → customer has already waited 32 minutes → risk of cancellation increases.**
+
+Traditional operational systems can treat these events as individual signals. The challenge is connecting them into a continuously evolving picture of restaurant health and identifying problems early enough to act.
+
+Order Rescue asks a simple operational question:
+
+> **Which restaurants are becoming operationally stressed, and where should rescue attention be focused right now?**
+
+Instead of waiting for a periodic report, Order Rescue continuously processes restaurant events and turns them into actionable rescue signals.
 
 ## The Solution
 
